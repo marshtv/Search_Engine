@@ -3,8 +3,8 @@
 //
 
 #include "invertedIndex.h"
+#include <iostream>
 #include <filesystem>
-#include <cassert>
 #include <fstream>
 #include <regex>
 

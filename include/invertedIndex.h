@@ -24,14 +24,11 @@ struct Entry {
 class InvertedIndex {
 public:
 	std::string path;
-	ssize_t docsSize;
 public:
 	InvertedIndex() = default;
-
 	InvertedIndex(const std::string& _path) {
 		this->path = _path;
 	}
-
 	InvertedIndex(const InvertedIndex& other) {
 		this->docs.clear();
 		this->docs.shrink_to_fit();
@@ -40,9 +37,7 @@ public:
 		this->freqDictionary.clear();
 		this->freqDictionary = other.freqDictionary;
 		this->path = other.path;
-		this->docsSize = other.docsSize;
 	}
-
 	InvertedIndex& operator=(const InvertedIndex& other) {
 		if (this == &other)
 			return *this;
@@ -53,10 +48,8 @@ public:
 		this->freqDictionary.clear();
 		this->freqDictionary = other.freqDictionary;
 		this->path = other.path;
-		this->docsSize = other.docsSize;
 		return  *this;
 	}
-
 	~InvertedIndex() = default;
 
 	void SetPath(std::string _path){

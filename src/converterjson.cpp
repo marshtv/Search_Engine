@@ -3,8 +3,6 @@
 //
 
 #include "converterjson.h"
-#include <fstream>
-#include <iostream>
 
 // Метод обновляет данные файла config.json
 void ConverterJSON::UpdateConfigJsonFile(const std::vector<std::string>& _docs) {
