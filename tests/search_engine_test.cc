@@ -6,7 +6,7 @@
 #include "searchServer.h"
 #include "gtest/gtest.h"
 
-/*TEST(sample_test_case, sample_test)
+TEST(sample_test_case, sample_test)
 {
 	EXPECT_EQ(1, 1);
 }
@@ -97,7 +97,7 @@ TEST(TestCaseSearchServer, TestSimple) {
 	std::vector<std::vector<std::pair<size_t, float>>> result = srv.search(request);
 
 	ASSERT_EQ(result, expected);
-}*/
+}
 
 TEST(TestCaseSearchServer, TestTop5) {
 	const std::vector<std::string> docs = {

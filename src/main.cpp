@@ -28,10 +28,12 @@ int main(int argc, char* argv[]) {
 	SearchServer searchServer(idx);
 
 	std::vector<std::vector<std::pair<size_t, float>>> result = searchServer.search(conv.GetRequests());
+	std::cout << "------------------------" << std::endl;
 	for (auto& i : result) {
 		for (auto& it : i) {
 			std::cout << "{ docId: " << it.first << ", index: " << it.second << " }" << std::endl;
 		}
+		std::cout << "------------------------" << std::endl;
 	}
 
 	return EXIT_SUCCESS;
