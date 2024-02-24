@@ -35,7 +35,7 @@ public:
 
 	~ConverterJSON() = default;
 
-	void SetPath(const std::string _path) {
+	void SetPath(const std::string& _path) {
 		this->path = _path;
 	}
 
@@ -48,11 +48,11 @@ public:
 		nlohmann::json jsonDic;
 
 		// Открывает файл *.json для чтения
-		std::ifstream inJsonFile(this->path + "\\" + _jsonFilePath);
+		std::ifstream inJsonFile(this->path + "/" + _jsonFilePath);
 
 		// Проверка на открытие/существование файла *.json
 		if (!inJsonFile.is_open()) {
-			std::cout << "File with path \"" << this->path + "\\" + _jsonFilePath << "\" doesn't exist!" << std::endl;
+			std::cout << "File with path \"" << this->path + "/" + _jsonFilePath << "\" doesn't exist!" << std::endl;
 			return jsonDic;
 		}
 
@@ -69,11 +69,11 @@ public:
 // Функция сохраняет содержимое словаря в файл JSON
 	void putDicToJsonFile(const std::string& _jsonFilePath, const nlohmann::json& _jsonDic) {
 		// Открывает файл *.json для записи с нуля
-		std::ofstream outJsonFile(this->path + "\\" + _jsonFilePath, std::ios::trunc);
+		std::ofstream outJsonFile(this->path + "/" + _jsonFilePath, std::ios::trunc);
 
 		// Проверка на открытие/существование файла *.json
 		if (!outJsonFile.is_open()) {
-			std::cout << "File with path \"" << this->path + "\\" + _jsonFilePath << "\" doesn't exist!" << std::endl;
+			std::cout << "File with path \"" << this->path + "/" + _jsonFilePath << "\" doesn't exist!" << std::endl;
 		} else {
 			// Записываем содержимое JSON-словаря в файл *.json
 			outJsonFile << _jsonDic;

@@ -60,6 +60,10 @@ public:
 		return path;
 	};
 
+	size_t GetDocsSize() {
+		return this->docs.size();
+	}
+
 	// Метод нахождения и удаления ненужных слов
 	std::string replaceString(const std::string& subject, const std::string &search);
 

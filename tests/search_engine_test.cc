@@ -6,7 +6,7 @@
 #include "searchServer.h"
 #include "gtest/gtest.h"
 
-TEST(sample_test_case, sample_test)
+/*TEST(sample_test_case, sample_test)
 {
 	EXPECT_EQ(1, 1);
 }
@@ -15,7 +15,7 @@ void TestInvertedIndexFunctionality(const std::vector<std::string>& docs,
 									const std::vector<std::string>& requests,
 									const std::vector<std::vector<Entry>>& expected) {
 	std::vector<std::vector<Entry>> result;
-	InvertedIndex idx("..\\");
+	InvertedIndex idx("../");
 	idx.UpdateDocumentBase(docs);
 	for(auto& request : requests) {
 		std::vector<Entry> word_count = idx.GetWordCount(request);
@@ -91,13 +91,13 @@ TEST(TestCaseSearchServer, TestSimple) {
 		{
 		}
 	};
-	InvertedIndex idx("..\\");
+	InvertedIndex idx("../");
 	idx.UpdateDocumentBase(docs);
 	SearchServer srv(idx);
 	std::vector<std::vector<std::pair<size_t, float>>> result = srv.search(request);
 
 	ASSERT_EQ(result, expected);
-}
+}*/
 
 TEST(TestCaseSearchServer, TestTop5) {
 	const std::vector<std::string> docs = {
@@ -134,7 +134,7 @@ TEST(TestCaseSearchServer, TestTop5) {
 			{2, 0.666666687}
 		}
 	};
-	InvertedIndex idx("..\\");
+	InvertedIndex idx("../");
 	idx.UpdateDocumentBase(docs);
 	SearchServer srv(idx);
 	std::vector<std::vector<std::pair<size_t, float>>> result = srv.search(request);

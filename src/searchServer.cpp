@@ -24,9 +24,6 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 
 	// список запросов не должен быть пустым
 	if (!_queriesInput.empty()) {
-		// сохраняем список запросов в файл "requests.json"
-		converterJson.putRequests(_queriesInput);
-
 		// Запускаем цикл для обработки каждого запроса
 		for (const auto &query: _queriesInput) {
 			std::vector<std::pair<size_t, float>> relativeIndexVec;

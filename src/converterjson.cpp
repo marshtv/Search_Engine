@@ -4,35 +4,6 @@
 
 #include "converterjson.h"
 
-// Метод обновляет данные файла config.json
-void ConverterJSON::UpdateConfigJsonFile(const std::vector<std::string>& _docs) {
-	// Объявляем JSON-словарь
-	nlohmann::json configOutJsonDic;
-	// Формируем строку, имитирующую JSON-формат
-	std::string configInStr = "{\n\t\"config\":{"
-							  "\n\t\t\"name\":\"SkillboxSearchEngine\","
-							  "\n\t\t\"version\":\"0.1\","
-							  "\n\t\t\"max_responses\":5"
-							  "\n\t},\n\t\"files\":[";
-	for (int i = 0; i < _docs.size(); ++i) {
-		if (i < 10)
-			configInStr += ("\n\t\t\"resources/file00" + std::to_string(i) + ".txt\"");
-		else if (i > 9 && i < 100)
-			configInStr += ("\n\t\t\"resources/file0" + std::to_string(i) + ".txt\"");
-		else if (i > 99 && i < 1000)
-			configInStr += ("\n\t\t\"resources/file" + std::to_string(i) + ".txt\"");
-		if (i < _docs.size() - 1)
-			configInStr += ",";
-	}
-	configInStr += "\n\t]\n}";
-
-	// Парсим строку в словарь
-	configOutJsonDic = nlohmann::json::parse(configInStr);
-
-	// Сохраняем содержимое словаря в файл
-	putDicToJsonFile("config.json", configOutJsonDic);
-}
-
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
 	// Объявляем JSON-словарь, и присваиваем ему извлечённое содержимое файла "../config.json"
 	nlohmann::json configJsonDic = getDicFromJsonFile("config.json");
@@ -42,9 +13,9 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
 	// В цикле добавляем в вектор нужные строки из ветки "files"
 	for (const auto& it : configJsonDic["files"]) {
-		std::ifstream docFile(this->path + "\\" + std::string(it));
+		std::ifstream docFile(this->path + "/" + std::string(it));
 		if (!docFile.is_open()) {
-			std::cout << "Wrong Path " << this->path + "\\" + std::string(it) <<
+			std::cout << "Wrong Path " << this->path + "/" + std::string(it) <<
 			" or file doesn't exist!" << std::endl;
 			break;
 		} else {
@@ -65,26 +36,6 @@ int ConverterJSON::GetResponsesLimit() {
 
 	// возвращаем значение искомого ключа словаря
 	return configJsonDic["config"]["max_responses"];
-}
-
-void ConverterJSON::putRequests(const std::vector<std::string>& _requests) {
-	//  Объявляем JSON-словарь
-	nlohmann::json requestsInputJsonDic;
-
-	// Формируем строку, имитирующую JSON-формат
-	std::string requestsStr = "{\n\t\"requests\":[";
-	for (int i = 0; i < _requests.size(); ++i) {
-		requestsStr += "\n\t\t\"" + _requests[i] + "\"";
-		if (i < _requests.size() - 1)
-			requestsStr += ",";
-	}
-	requestsStr += "\n\t]\n}";
-
-	// Парсим строку в словарь
-	requestsInputJsonDic = nlohmann::json::parse(requestsStr);
-
-	// Сохраняем содержимое словаря в файл
-	putDicToJsonFile("requests.json", requestsInputJsonDic);
 }
 
 std::vector<std::string> ConverterJSON::GetRequests() {
