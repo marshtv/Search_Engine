@@ -2,13 +2,13 @@
 // Created by marshtv on 05.01.2024.
 //
 
-//#include <iostream>
 #include "searchServer.h"
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <limits>
 #include <cmath>
+#include <thread>
 
 // Метод сравнивает числа типа float
 bool isEqualFloat(float x, float y) {
@@ -31,12 +31,6 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 
 			// Отсеиваем только уникальные слова, а затем разбиваем строку запроса на слова
 			std::vector<std::string> queryWords = idx.convertTextToUniqWords(query);
-			//Debug
-			/*for (auto& it : queryWords) {
-				std::cout << it << " ";
-			}
-			std::cout << std::endl;*/
-			//Debug
 
 			/**
 			 * Получаем вектор индексов встречающихся уникальных слов во всех документах,
@@ -46,12 +40,6 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 			for (auto &wordIt: queryWords) {
 				std::vector<Entry> sortedIndexVec;
 				sortedIndexVec = idx.GetWordCount(wordIt);
-				//Debug
-				/*std::cout << wordIt << ":\n";
-				for (auto& it : sortedIndexVec) {
-					std::cout << "{ docId: " << it.docId << ", count: " << it.count << " }" << std::endl;
-				}*/
-				//Debug
 
 				// сортируем полученный вектор с помощью std::sort() и лямбда-функции в аргументе сравнения.
 				std::sort(sortedIndexVec.begin(),
@@ -70,19 +58,23 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 			size_t relevanceAbsMax = 0;
 			std::vector<std::pair<size_t, size_t>> relevanceAbsVec;
 			for (int id = 0; id < idx.GetDocsSize(); ++id) {
-				size_t relevanceAbsolute = 0;
-				for (auto &d: freqVec) {
-					for (auto &e: d.second) {
-						if (e.docId == id) {
-							relevanceAbsolute += e.count;
-							if (relevanceAbsolute > relevanceAbsMax)
-								relevanceAbsMax = relevanceAbsolute;
-							break;
+				std::thread thread
+				([&](){
+					size_t relevanceAbsolute = 0;
+					for (auto &d: freqVec) {
+						for (auto &e: d.second) {
+							if (e.docId == id) {
+								relevanceAbsolute += e.count;
+								if (relevanceAbsolute > relevanceAbsMax)
+									relevanceAbsMax = relevanceAbsolute;
+								break;
+							}
 						}
 					}
-				}
-				if (relevanceAbsolute > 0)
-					relevanceAbsVec.emplace_back(id, relevanceAbsolute);
+					if (relevanceAbsolute > 0)
+						relevanceAbsVec.emplace_back(id, relevanceAbsolute);
+				});
+				thread.join();
 			}
 
 			/**
