@@ -37,18 +37,29 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 			 * собираем в пары слова и вектора индексов, а пары собираем в вектор по всему запросу,
 			 * сортируем его по возрастанию значения count.
 			*/
+			// Вектор потоков для организации многопоточного индексирования документов
+			std::vector<std::thread> threadVec;
+			// Мьютекс для контроля доступа в многопоточном обращении к переменным
+			std::mutex mtx;
 			for (auto &wordIt: queryWords) {
-				std::vector<Entry> sortedIndexVec;
-				sortedIndexVec = idx.GetWordCount(wordIt);
+				threadVec.push_back(std::thread([&, wordIt]{
+					std::vector<Entry> sortedIndexVec;
+					sortedIndexVec = idx.GetWordCount(wordIt);
 
-				// сортируем полученный вектор с помощью std::sort() и лямбда-функции в аргументе сравнения.
-				std::sort(sortedIndexVec.begin(),
-						  sortedIndexVec.end(),
-						  [](auto &left, auto &right) {
-							  return left.count < right.count;
-						  });
-				freqVec.emplace_back(wordIt, sortedIndexVec);
+					// сортируем полученный вектор с помощью std::sort() и лямбда-функции в аргументе сравнения.
+					std::sort(sortedIndexVec.begin(),
+							  sortedIndexVec.end(),
+							  [](auto &left, auto &right) {
+								  return left.count < right.count;
+							  });
+					mtx.lock();
+					freqVec.emplace_back(wordIt, sortedIndexVec);
+					mtx.unlock();
+				}));
 			}
+
+			// Синхронизируем полученные потоки
+			for (auto& thrd : threadVec) if (thrd.joinable()) thrd.join();
 
 			/**
 			 * Вычисляем абсолютную релевантность каждого документа, создаём пару с id документа,
@@ -56,25 +67,22 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 			 * а за одно получаем максимальное значение релевантности среди всех документов.
 			*/
 			size_t relevanceAbsMax = 0;
+			// Вектор абсолютной релевантности документов
 			std::vector<std::pair<size_t, size_t>> relevanceAbsVec;
 			for (int id = 0; id < idx.GetDocsSize(); ++id) {
-				std::thread thread
-				([&](){
-					size_t relevanceAbsolute = 0;
-					for (auto &d: freqVec) {
-						for (auto &e: d.second) {
-							if (e.docId == id) {
-								relevanceAbsolute += e.count;
-								if (relevanceAbsolute > relevanceAbsMax)
-									relevanceAbsMax = relevanceAbsolute;
-								break;
-							}
+				size_t relevanceAbsolute = 0;
+				for (auto& d: freqVec) {
+					for (auto& e: d.second) {
+						if (e.docId == id) {
+							relevanceAbsolute += e.count;
+							if (relevanceAbsolute > relevanceAbsMax)
+								relevanceAbsMax = relevanceAbsolute;
+							break;
 						}
 					}
-					if (relevanceAbsolute > 0)
-						relevanceAbsVec.emplace_back(id, relevanceAbsolute);
-				});
-				thread.join();
+				}
+				if (relevanceAbsolute > 0)
+					relevanceAbsVec.emplace_back(id, relevanceAbsolute);
 			}
 
 			/**

@@ -5,6 +5,7 @@
 #include "invertedIndex.h"
 #include <iostream>
 #include <regex>
+#include <mutex>
 
 std::vector<std::string> InvertedIndex::convertTextToUniqWords(const std::string& _text) {
 	// Вектор слов
@@ -78,19 +79,12 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& _inputDoc
 	} else {
 		std::cout << "File InputDocs is EMPTY!!!" << std::endl;
 	}
-	//Debug
-	/*std::cout << "freqDictionary:" << ":\n";
-	for (auto& it : freqDictionary) {
-		std::cout << "\t" << it.first << ":\n";
-		for (auto& i : it.second) {
-			std::cout << "\t\t{ docId: " << i.docId << ", rank: " << i.count << " }" << std::endl;
-		}
-		std::cout << "\n";
-	}*/
-	//Debug
 }
 
+
 std::vector<Entry> InvertedIndex::GetWordCount(const std::string& _word) {
+	std::mutex mtxIdx;
+	std::lock_guard<std::mutex> lg(mtxIdx);
 	std::vector<Entry> tempEntryVector;
 	if (!_word.empty()) {
 		if (auto search = freqDictionary.find(_word); search != freqDictionary.end()) {
