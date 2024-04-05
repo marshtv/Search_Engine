@@ -18,7 +18,8 @@ bool isEqualFloat(float x, float y) {
 
 std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 	const std::vector<std::string>& _queriesInput) {
-	ConverterJSON converterJson(idx.GetPath());
+	//ConverterJSON converterJson(idx.GetPath());
+	ConverterJSON converterJson;
 	// Список релевантности документов по всем запросам
 	std::vector<std::vector<std::pair<size_t, float>>> relativeIndexVecAllQueries, topRelativeIndexes;
 
@@ -39,8 +40,6 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 			*/
 			// Вектор потоков для организации многопоточного индексирования документов
 			std::vector<std::thread> threadVec;
-			// Мьютекс для контроля доступа в многопоточном обращении к переменным
-			std::mutex mtx;
 			for (auto &wordIt: queryWords) {
 				threadVec.push_back(std::thread([&, wordIt]{
 					std::vector<Entry> sortedIndexVec;
@@ -52,9 +51,7 @@ std::vector<std::vector<std::pair<size_t, float>>> SearchServer::search(
 							  [](auto &left, auto &right) {
 								  return left.count < right.count;
 							  });
-					mtx.lock();
 					freqVec.emplace_back(wordIt, sortedIndexVec);
-					mtx.unlock();
 				}));
 			}
 

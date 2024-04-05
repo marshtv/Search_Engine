@@ -5,7 +5,7 @@
 #include "converterjson.h"
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
-	// Объявляем JSON-словарь, и присваиваем ему извлечённое содержимое файла "../config.json"
+	// Объявляем JSON-словарь, и присваиваем ему извлечённое содержимое файла "config.json"
 	nlohmann::json configJsonDic = getDicFromJsonFile("config.json");
 
 	// Создаёт вектор строк для сохранения конкретных строк
@@ -13,9 +13,9 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
 	// В цикле добавляем в вектор нужные строки из ветки "files"
 	for (const auto& it : configJsonDic["files"]) {
-		std::ifstream docFile(this->path + "/" + std::string(it));
+		std::ifstream docFile("../" + std::string(it));
 		if (!docFile.is_open()) {
-			std::cout << "Wrong Path " << this->path + "/" + std::string(it) <<
+			std::cout << "Wrong Path " << "../" + std::string(it) <<
 			" or file doesn't exist!" << std::endl;
 			break;
 		} else {
@@ -71,15 +71,16 @@ void ConverterJSON::putAnswers(const std::vector<std::vector<std::pair<size_t, f
 		if (count == 0) {
 			answersStr += "\"request00" + std::to_string(i) + "\":{\n\t\t\t" + R"("result":"false")";
 		} else {
-			answersStr += "\"request00" + std::to_string(i) + "\":{\n\t\t\t" + R"("result":"true",)" + "\n\t\t\t\"relevance\":{\n\t\t\t\t";
+			answersStr += "\"request00" + std::to_string(i) + "\":{\n\t\t\t" + R"("result":"true",)"
+				+ "\n\t\t\t\"relevance\":[\n\t\t\t\t";
 			for (int j = 0; j < _answers[i].size(); ++j) {
-				answersStr += "\"docid\":" +
+				answersStr += "{\n\t\t\t\t\t\"docid\":" +
 					std::to_string(_answers[i][j].first) + ",\"rank\":" +
-					std::to_string(_answers[i][j].second);
+					std::to_string(_answers[i][j].second) + "\n\t\t\t\t}";
 				if (j < _answers[i].size() - 1)
 					answersStr += ",\n\t\t\t\t";
 			}
-			answersStr += "\n\t\t\t}";
+			answersStr += "\n\t\t\t]";
 		}
 		if (i < _answers.size() - 1) {
 			answersStr += "\n\t\t},\n\t\t";
@@ -87,6 +88,8 @@ void ConverterJSON::putAnswers(const std::vector<std::vector<std::pair<size_t, f
 			answersStr += "\n\t\t}";
 	}
 	answersStr += "\n\t}\n}";
+
+	std::cout << answersStr << std::endl;
 
 	// Парсим строку в виде JSON-словаря и сохраняем в файл "../answers.json"
 	putDicToJsonFile("answers.json", nlohmann::json::parse(answersStr));

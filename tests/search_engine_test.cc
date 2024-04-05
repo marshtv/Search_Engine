@@ -2,8 +2,8 @@
 // Created by marshtv on 05.01.2024.
 //
 
-#include "invertedIndex.h"
-#include "searchServer.h"
+#include "../invertedIndex.h"
+#include "../searchServer.h"
 #include "gtest/gtest.h"
 
 TEST(sample_test_case, sample_test)
@@ -15,7 +15,7 @@ void TestInvertedIndexFunctionality(const std::vector<std::string>& docs,
 									const std::vector<std::string>& requests,
 									const std::vector<std::vector<Entry>>& expected) {
 	std::vector<std::vector<Entry>> result;
-	InvertedIndex idx("../");
+	InvertedIndex idx;
 	idx.UpdateDocumentBase(docs);
 	for(auto& request : requests) {
 		std::vector<Entry> word_count = idx.GetWordCount(request);
@@ -91,7 +91,8 @@ TEST(TestCaseSearchServer, TestSimple) {
 		{
 		}
 	};
-	InvertedIndex idx("../");
+
+	InvertedIndex idx;
 	idx.UpdateDocumentBase(docs);
 	SearchServer srv(idx);
 	std::vector<std::vector<std::pair<size_t, float>>> result = srv.search(request);
@@ -134,7 +135,8 @@ TEST(TestCaseSearchServer, TestTop5) {
 			{2, 0.666666687}
 		}
 	};
-	InvertedIndex idx("../");
+
+	InvertedIndex idx;
 	idx.UpdateDocumentBase(docs);
 	SearchServer srv(idx);
 	std::vector<std::vector<std::pair<size_t, float>>> result = srv.search(request);

@@ -14,45 +14,20 @@
 #include "nlohmann/json.hpp"
 
 class ConverterJSON {
-	std::string path;
 public:
 	ConverterJSON() = default;
-
-	ConverterJSON(const std::string& _path) {
-		path = _path;
-	};
-
-	ConverterJSON(const ConverterJSON& other) {
-		this->path = other.path;
-	};
-
-	ConverterJSON& operator=(const ConverterJSON& other) {
-		if (this == &other)
-			return *this;
-		this->path = other.path;
-		return *this;
-	};
-
 	~ConverterJSON() = default;
-
-	void SetPath(const std::string& _path) {
-		this->path = _path;
-	}
-
-	std::string GetPath() {
-		return path;
-	};
 
 	// Функция извлекает содержимое файла JSON в словарь nlohmann
 	nlohmann::json getDicFromJsonFile(const std::string& _jsonFilePath) {
 		nlohmann::json jsonDic;
 
 		// Открывает файл *.json для чтения
-		std::ifstream inJsonFile(this->path + "/" + _jsonFilePath);
+		std::ifstream inJsonFile("../" + _jsonFilePath);
 
 		// Проверка на открытие/существование файла *.json
 		if (!inJsonFile.is_open()) {
-			std::cout << "File with path \"" << this->path + "/" + _jsonFilePath << "\" doesn't exist!" << std::endl;
+			std::cout << "File with path \"" << "../" + _jsonFilePath << "\" doesn't exist!" << std::endl;
 			return jsonDic;
 		}
 
@@ -69,11 +44,11 @@ public:
 // Функция сохраняет содержимое словаря в файл JSON
 	void putDicToJsonFile(const std::string& _jsonFilePath, const nlohmann::json& _jsonDic) {
 		// Открывает файл *.json для записи с нуля
-		std::ofstream outJsonFile(this->path + "/" + _jsonFilePath, std::ios::trunc);
+		std::ofstream outJsonFile("../" + _jsonFilePath, std::ios::trunc);
 
 		// Проверка на открытие/существование файла *.json
 		if (!outJsonFile.is_open()) {
-			std::cout << "File with path \"" << this->path + "/" + _jsonFilePath << "\" doesn't exist!" << std::endl;
+			std::cout << "File with path \"" << "../" + _jsonFilePath << "\" doesn't exist!" << std::endl;
 		} else {
 			// Записываем содержимое JSON-словаря в файл *.json
 			outJsonFile << _jsonDic;

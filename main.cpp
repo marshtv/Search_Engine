@@ -5,23 +5,9 @@
 #include "searchServer.h"
 #include <iostream>
 
-std::string FindPath(const std::string& word){
-	int a = 0;
-	for (int i = 0; i < word.size(); i++)
-		if (word[i] == '\\' || word[i] == '/')
-			a = i;
-
-	std::string str;
-	for(int i = 0; i < a; i++)
-		str += word[i];
-
-	return str;
-}
-
 int main(int argc, char* argv[]) {
-	std::string mainPath = FindPath(std::string(argv[0]));
-	InvertedIndex idx(mainPath);
-	ConverterJSON conv(mainPath);
+	InvertedIndex idx;
+	ConverterJSON conv;
 
 	idx.UpdateDocumentBase(conv.GetTextDocuments());
 

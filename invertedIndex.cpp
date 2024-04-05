@@ -81,9 +81,8 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& _inputDoc
 	}
 }
 
-
+std::mutex mtxIdx;
 std::vector<Entry> InvertedIndex::GetWordCount(const std::string& _word) {
-	std::mutex mtxIdx;
 	std::lock_guard<std::mutex> lg(mtxIdx);
 	std::vector<Entry> tempEntryVector;
 	if (!_word.empty()) {
